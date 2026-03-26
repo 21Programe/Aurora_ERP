@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tripulação - Aurora ERP</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <h1>Módulo de Tripulação</h1>
+        <nav>
+            <a href="dashboard.html">Dashboard</a>
+            <a href="manutencao.html">Manutenção</a>
+            <a href="tripulacao.html">Tripulação</a>
+            <a href="trafego.html">Tráfego</a>
+            <a href="suprimentos.html">Suprimentos</a>
+            <a href="bilhetagem.html">Bilhetagem</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <div class="form-card">
+            <h2>Cadastrar tripulante</h2>
+            <form id="formTripulacao">
+                <input type="text" id="nome" placeholder="Nome" required>
+                <input type="text" id="funcao" placeholder="Função" required>
+                <input type="text" id="status" placeholder="Status" value="disponivel" required>
+                <button type="submit">Salvar tripulante</button>
+            </form>
+        </div>
+
+        <div class="table-container">
+            <h2>Lista de tripulação</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Função</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="tabelaTripulacao"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        async function carregarTripulacao() {
+            const resposta = await getData("/tripulacao/");
+            if (resposta && resposta.dados) {
+                preencherTabela("tabelaTripulacao", resposta.dados, ["id", "nome", "funcao", "status"]);
+            }
+        }
+
+        document.getElementById("formTripulacao").addEventListener("submit", async function(e) {
+            e.preventDefault();
+
+            const payload = {
+                nome: document.getElementById("nome").value,
+                funcao: document.getElementById("funcao").value,
+                status: document.getElementById("status").value
+            };
+
+            const ok = await postData("/tripulacao/", payload);
+            if (ok) {
+                this.reset();
+                document.getElementById("status").value = "disponivel";
+                carregarTripulacao();
+            }
+        });
+
+        carregarTripulacao();
+    </script>
+</body>
+</html>
